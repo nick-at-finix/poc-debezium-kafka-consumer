@@ -1,6 +1,7 @@
 package com.poc;
 
 import com.poc.producer.Producer;
+import java.util.concurrent.CompletableFuture;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -18,9 +19,17 @@ public class SpringKafkaApplication implements CommandLineRunner {
 
   @Override
   public void run(String... strings) throws Exception {
-    for (int i = 1; i < 11; i++){
-      producer.send("test", "Message-" + i);
-    }
+    CompletableFuture.runAsync(() -> {
+      try {
+        Thread.sleep(5000);
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+      }
+      for (int i = 1; i < 11; i++){
+        producer.send("test", "Message-" + i);
+      }
+    });
+
   }
 
 }

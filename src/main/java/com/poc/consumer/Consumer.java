@@ -23,16 +23,22 @@ public class Consumer {
     return latch;
   }
 
+  // @Header(name = KafkaHeaders.RECEIVED_MESSAGE_KEY, required = false)
   @KafkaListener(id = "batch", topics = "test")
   public void receive(
       List<String> data,
-      @Header(KafkaHeaders.PARTITION) List<Integer> partitions,
+      @Header(name = KafkaHeaders.PARTITION, required = false) List<Integer> partitions,
       @Header(KafkaHeaders.OFFSET) List<Long> offsets) {
 
     LOGGER.info("start of batch receive");
     for (int i = 0; i < data.size(); i++) {
-      LOGGER.info("received message='{}' with partition-offset='{}'", data.get(i),
-          partitions.get(i) + "-" + offsets.get(i));
+      if (partitions == null) {
+        LOGGER.info("received message='{}'", data.get(i));
+      } else {
+        LOGGER.info("received message='{}' with partition-offset='{}'",
+            data.get(i),
+            partitions.get(i) + "-" + offsets.get(i));
+      }
       // handle message
 
       latch.countDown();

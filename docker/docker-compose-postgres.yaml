@@ -10,11 +10,18 @@ services:
     image: quay.io/debezium/kafka:${DEBEZIUM_VERSION}
     ports:
       - "9092:9092"
+      - "9093:9093"
     links:
       - zookeeper
     environment:
       - ZOOKEEPER_CONNECT=zookeeper:2181
       - AUTO_CREATE_TOPICS_ENABLE=true
+      - KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=CLIENT:PLAINTEXT,EXTERNAL:PLAINTEXT
+      - KAFKA_LISTENERS=CLIENT://:9092,EXTERNAL://:9093
+      - KAFKA_ADVERTISED_LISTENERS=CLIENT://kafka:9092,EXTERNAL://localhost:9093
+      - KAFKA_INTER_BROKER_LISTENER_NAME=CLIENT
+#      - KAFKA_ADVERTISED_HOST_NAME=localhost
+#      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:9092
   postgres:
     image: quay.io/debezium/example-postgres:${DEBEZIUM_VERSION}
     ports:
