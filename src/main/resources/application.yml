@@ -2,3 +2,6 @@ kafka:
   bootstrap-servers: localhost:9093
   topic:
     batch: "dbserver1.inventory.customers"
+
+app:
+  test-mode: false

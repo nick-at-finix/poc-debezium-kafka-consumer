@@ -24,7 +24,7 @@ public class Consumer {
     this.objectMapper = objectMapper;
   }
 
-  @KafkaListener(id = "batch", topics = "dbserver1.inventory.customers")
+  @KafkaListener(id = "batch", topics = "${kafka.topic.batch}")
   public void receive(
       List<String> data,
       @Header(name = KafkaHeaders.PARTITION, required = false) List<Integer> partitions,
