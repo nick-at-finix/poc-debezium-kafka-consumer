@@ -2,6 +2,7 @@ package com.poc.consumer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.poc.message.ValueMessage;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,6 +29,13 @@ public class ConsumerConfig {
     objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
     return objectMapper;
   }
+
+  @Bean
+  public JsonDeserializer<ValueMessage> valueJsonDeserializer() {
+    return new JsonDeserializer<>(ValueMessage.class);
+  }
+
+
 
   @Bean
   public Map<String, Object> consumerConfigs() {

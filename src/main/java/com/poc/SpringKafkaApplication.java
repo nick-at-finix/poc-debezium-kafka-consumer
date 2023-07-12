@@ -14,11 +14,12 @@ public class SpringKafkaApplication implements CommandLineRunner {
     SpringApplication.run(SpringKafkaApplication.class, args);
   }
 
+
   @Autowired
   private Producer producer;
 
   @Override
-  public void run(String... strings) throws Exception {
+  public void run(String... strings) {
     CompletableFuture.runAsync(() -> {
       try {
         Thread.sleep(5000);
@@ -26,7 +27,7 @@ public class SpringKafkaApplication implements CommandLineRunner {
         e.printStackTrace();
       }
       for (int i = 1; i < 11; i++){
-        producer.send("test", "Message-" + i);
+        producer.send("test", String.format("{\"value\": %d}", i));
       }
     });
 

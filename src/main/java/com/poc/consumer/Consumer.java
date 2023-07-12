@@ -1,10 +1,12 @@
 package com.poc.consumer;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.handler.annotation.Header;
@@ -15,33 +17,31 @@ public class Consumer {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(Consumer.class);
 
-  public static final int COUNT = 20;
+  private final ObjectMapper objectMapper;
 
-  private final CountDownLatch latch = new CountDownLatch(COUNT);
-
-  public CountDownLatch getLatch() {
-    return latch;
+  @Autowired
+  public Consumer(ObjectMapper objectMapper) {
+    this.objectMapper = objectMapper;
   }
 
-  // @Header(name = KafkaHeaders.RECEIVED_MESSAGE_KEY, required = false)
-  @KafkaListener(id = "batch", topics = "test")
+  @KafkaListener(id = "batch", topics = "dbserver1.inventory.customers")
   public void receive(
       List<String> data,
       @Header(name = KafkaHeaders.PARTITION, required = false) List<Integer> partitions,
-      @Header(KafkaHeaders.OFFSET) List<Long> offsets) {
+      @Header(KafkaHeaders.OFFSET) List<Long> offsets) throws JsonProcessingException {
 
     LOGGER.info("start of batch receive");
     for (int i = 0; i < data.size(); i++) {
+      final String prettyString = objectMapper
+          .writerWithDefaultPrettyPrinter()
+          .writeValueAsString(objectMapper.readTree(data.get(i)));
       if (partitions == null) {
-        LOGGER.info("received message='{}'", data.get(i));
+        LOGGER.info("received message='{}'", prettyString);
       } else {
         LOGGER.info("received message='{}' with partition-offset='{}'",
-            data.get(i),
+            prettyString,
             partitions.get(i) + "-" + offsets.get(i));
       }
-      // handle message
-
-      latch.countDown();
     }
     LOGGER.info("end of batch receive");
   }
