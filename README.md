@@ -2,7 +2,7 @@
 
 ## Overview
 This repo houses a proof of concept for using Debezium to stream changes from a Postgres database
-to a Kafka topic. The Kafka topic is then consumed by a Kafka consumer in batches.
+to a Kafka topic. Messages are then consumed, in bulk, by a Spring Boot application.
 
 ## Getting Started
 Clone this repo and run the following commands from the project root:
